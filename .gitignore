@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+frontend/dist/
+
+# Secrets & env — never commit
+.env
+.env.*
+!.env.example
+backend/.env
+
+# Databases & data
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+backend/data/
+data/
+
+# Logs
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.claude/
