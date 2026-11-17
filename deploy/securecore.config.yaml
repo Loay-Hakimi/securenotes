@@ -1,0 +1,47 @@
+# SecureCore gateway config for the SecureNotes docker-compose stack.
+# Mounted over /config.yaml in the gateway container. Upstream is the nginx
+# "web" service, which serves the SPA and proxies /api to the backend.
+
+server:
+  port: 8080
+  read_timeout: 10s
+  write_timeout: 10s
+  idle_timeout: 60s
+
+upstream:
+  url: "http://web:80"
+  health_check: "/"
+  timeout: 5s
+
+rate_limiter:
+  enabled: true
+  # Generous for a single-page app that issues several requests per page load.
+  requests_per_minute: 600
+  burst: 60
+  cleanup_interval: 5m
+  whitelist:
+    - "127.0.0.1"
+
+ddos_protection:
+  enabled: true
+  global_rps_ceiling: 5000
+  per_ip_ban_threshold: 600
+  ban_window: 10s
+  ban_duration: 5m
+  escalation_multiplier: 2.0
+
+security_headers:
+  hsts_max_age: 63072000
+  csp: "default-src 'self'; style-src 'self' 'unsafe-inline'"
+  permissions_policy: "geolocation=(), microphone=(), camera=()"
+  referrer_policy: "strict-origin-when-cross-origin"
+  frame_options: "DENY"
+
+logging:
+  level: "info"
+  format: "json"
+  output: "stdout"
+  redact_headers:
+    - "Authorization"
+    - "Cookie"
+    - "X-CSRF-Token"

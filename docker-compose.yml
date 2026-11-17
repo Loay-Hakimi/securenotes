@@ -1,0 +1,45 @@
+# SecureNotes full stack, running behind the SecureCore gateway.
+#
+#   client → gateway (securecore :8080) → web (nginx: SPA + /api proxy) → backend (:4000)
+#
+# NOTE: the gateway builds from ../securecore, so check out both repos side by
+# side (as in Desktop/GitHub). Set JWT_SECRET in a .env file first:
+#   node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+#
+# Then:  docker compose up --build   and open http://localhost:8080
+
+services:
+  backend:
+    build: ./backend
+    environment:
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      DB_PATH: /data/securenotes.db
+      PORT: "4000"
+    volumes:
+      - backend-data:/data
+    expose:
+      - "4000"
+    restart: unless-stopped
+
+  web:
+    build: ./frontend
+    depends_on:
+      - backend
+    expose:
+      - "80"
+    restart: unless-stopped
+
+  gateway:
+    build:
+      context: ../securecore
+    depends_on:
+      - web
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./deploy/securecore.config.yaml:/config.yaml:ro
+    restart: unless-stopped
+
+volumes:
+  backend-data:
