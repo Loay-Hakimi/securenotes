@@ -23,9 +23,9 @@ jobs:
       - run: npm ci
       - name: Test
         run: npm test
-      - name: Audit dependencies (informational)
-        run: npm audit --audit-level=high
-        continue-on-error: true
+      - name: Audit production dependencies
+        # Gate on the dependencies that actually ship (dev tooling excluded).
+        run: npm audit --omit=dev --audit-level=high
 
   frontend:
     runs-on: ubuntu-latest

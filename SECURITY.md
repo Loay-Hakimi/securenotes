@@ -59,9 +59,11 @@ actually implemented and **where in the code** — and is honest about what is
 
 ### A06:2021 — Vulnerable and Outdated Components  ⚠️ partial
 - Dependencies are pinned and installed from a committed lockfile (`npm ci`), and
-  **`npm audit` runs in CI**. → [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
+  **`npm audit --omit=dev --audit-level=high` runs as a CI gate** on the
+  production dependencies that actually ship (0 known advisories).
+  → [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
 - **Not done:** automated dependency-update bots (e.g. Dependabot) are not
-  configured.
+  configured, and dev-tooling advisories are not gated.
 
 ### A07:2021 — Identification and Authentication Failures  ✅
 - **Brute-force protection:** login and registration are rate-limited per IP.
